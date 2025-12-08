@@ -8,9 +8,9 @@ nom = "8"
 reqwest = { version = "0.12", features=["blocking"] }
 ---
 
-use clap::{CommandFactory, Parser, error::ErrorKind};
+use clap::{error::ErrorKind, CommandFactory, Parser};
 use nom::{
-    IResult, Parser as NomParser, bytes::complete::tag, character::complete, sequence::preceded,
+    bytes::complete::tag, character::complete, sequence::preceded, IResult, Parser as NomParser,
 };
 use reqwest::{blocking::Client, header::COOKIE};
 use std::fs::File;
@@ -58,11 +58,11 @@ fn main() -> Result<(), reqwest::Error> {
         .send()?
         .text()?;
 
+    let day_directory = args.current_working_directory.join(&args.day);
+    std::fs::create_dir_all(&day_directory).expect("should be able to create the directory");
+
     for filename in ["input1.txt", "input2.txt"] {
-        let file_path = args
-            .current_working_directory
-            .join(&args.day)
-            .join(filename);
+        let file_path = day_directory.join(filename);
         let mut file = File::create(&file_path).expect("should be able to create a file");
 
         file.write_all(input_data.as_bytes())
